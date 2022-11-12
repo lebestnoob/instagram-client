@@ -1,0 +1,63 @@
+doctype html
+html(lang="en")
+  head
+    title= title
+    link(rel="icon" type="image/x-icon" href=`/user/${username}/thumb_pfp?preview=true`)
+    //- link(rel="preload" href=`/user/${username}/posts.json` type="application/json" as="fetch")
+    link(rel="preload" href="/assets/loadPosts.js" as="script" crossorigin)
+    link(rel="prefetch" href="/assets/postMeta.js" as="script" crossorigin)
+    link(rel="modulepreload" href="https://cdn.jsdelivr.net/npm/ky@0.30.0/distribution/index.min.js" as="script" crossorigin)
+    meta(id="viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2, viewport-fit=cover")
+    meta(name="theme-color" content="#ffffff")
+    meta(name="mobile-web-app-capable" content="yes")
+    meta(charset="UTF-8")
+    link(href='/assets/style.css', rel='stylesheet', type='text/css', media='screen')
+  
+  body
+    noscript
+      meta(http-equiv=refresh content='0; url="/assets/noscript.html"')
+    //- div(class="header")
+    //-   p(id="service_name")= service_name
+    div(class="main")
+        form(role="search" action="/search")
+          input(type="search" id="site-search" value="" name="q" minlength="1" maxlength="50" size="30" required autocomplete="off" spellcheck=false autocorrect=off placeholder="Search profiles, tags, and locations")
+          button <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+        div(class="profile")
+          a(href=`/user/${username}/pfp`)
+            img(src=`/user/${username}/thumb_pfp?preview=true` id="pfp" onmouseover=`this.src="/user/${username}/pfp"` onmouseout=`this.src="/user/${username}/thumb_pfp?preview=true"` width=96 height=96 alt=`${username}'s Profile Picture`)
+          span(id="username")= username
+          span(id="verified")
+            i(class=`${verified}`)
+          span(id="id")  (#{id})
+        p(id="overview")
+          span(id="posts_num") <b> #{posts_num} </b> posts
+          br
+          span(id="followers") <b> #{followers} </b> followers
+          br
+          span(id="following") <b> #{following} </b> following
+        p(id="name")= name
+        p(id="category")= category
+        p(id="bio")= bio
+        p(id="url")
+          a(href=link target="_blank")= link_short
+        div(class="spacing") 
+        p(id="private")=private
+    ul(class="posts")
+        div
+          i(class="bi bi-exclamation-circle")
+          p(id="error") An Unknown Error has Occurred!
+    div(class="page-load-status")
+        div(class="lds-spinner infinite-scroll-request")
+          | <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+
+    div(id="loading")
+        div(class="lds-spinner" style="top: 50%; transform: translateY(-50%); overflow: hidden")
+          | <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+    div(class="page")
+      script.
+        var username = "#{username}";
+      script(defer src="/assets/Main.js")
+      script(async src="/assets/userMeta.js" type="module") 
+      script(async type="module" src="/assets/loadPosts.js")
+      script(async src="/assets/js/infinite-scroll.pkgd.min.js")
+      script(async src="/assets/js/lazysizes.min.js")

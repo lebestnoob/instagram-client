@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body>
+    Hi!
+</body>
+<script type="module">
+    import ky from "https://cdn.jsdelivr.net/npm/ky@0.30.0/distribution/index.min.js"; (async () => { console.time("fetch"); await fetch("https://jsonplaceholder.typicode.com/todos/1") .then((response) => response.json()) .then(console.log) .finally(() =>
+    console.timeEnd("fetch")); console.time("ky"); const json = await ky( "https://jsonplaceholder.typicode.com/todos/1" ).json(); console.log(json); console.timeEnd("ky"); })();
+</script>
+
+</html>
