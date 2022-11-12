@@ -21,5 +21,5 @@ An Instagram Client
 - Install the dependencies: `npm install`
 - Rename `.env.example` to `.env`
 - Change the `SESSION_ID` environmental value to your own Instagram session ID, obtained through browser cookies
-- Run `node start` to launch the server
+- Run `npm start` to launch the server
 - Navigate to `http://localhost:3000` in your browser to use it
