@@ -27,7 +27,7 @@ app.get("/:username/posts", async(c) => {
 
         let posts = [];
         try {
-                await fetch(`https://i.instagram.com/api/v1/feed/user/${userId}/`, {
+                await fetch(`https://i.instagram.com/api/v1/feed/user/${userId}/?max_id=${c.req.query("max_id")}`, {
                             headers: headers(c),
                         }
                     )
