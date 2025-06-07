@@ -1,26 +1,22 @@
 {
-	"name": "instagram-client",
+	"name": "instagram-proxy",
 	"version": "1.0.0",
-	"description": "An Instagram Client",
+	"description": "An Instagram proxy aiming to implement all features of the web version",
 	"type": "module",
-	"main": "server.js",
+	"main": "index.js",
 	"scripts": {
-		"start": "node server.js",
+		"start": "node index.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"apicache": "^1.6.3",
+		"@hono/node-server": "^1.14.4",
 		"big-integer": "^1.6.51",
-		"compression": "^1.7.4",
-		"dotenv": "^16.0.1",
-		"express": "^4.18.1",
+		"hono": "^4.7.11",
 		"js-abbreviation-number": "^1.4.0",
-		"node-fetch-cache": "^3.0.5",
 		"normalize-strings": "^1.1.1",
 		"normalize-text": "^2.4.0",
-		"normalize-unicode-text": "^0.0.1",
-		"pug": "^3.0.2"
+		"normalize-unicode-text": "^0.0.1"
 	}
 }
