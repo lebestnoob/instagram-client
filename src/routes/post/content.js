@@ -48,16 +48,15 @@ app.get("/:id/content", async(c) => {
                 if ("video_versions" in items) {
                     is_video = true;
                     const video_versions = items.video_versions;
-                    let maxres = video_versions.reduce((highvid, vid) =>
-                        highvid.height > vid.height ? highvid : vid
+                    let maxres = video_versions.reduce((vid, vid2) =>
+                        vid.height * vid.width > vid2.height * vid2.width ? vid : vid2
                     );
                     image_url = maxres.url;
                     return;
                 }
                 const image_versions = items.image_versions2.candidates;
-                let maxres = image_versions.reduce((highimg, img) =>
-                    highimg.width > img.width ? highimg : img
-                );
+                let maxres = image_versions.reduce((img, img2) =>
+                    img.width * img.height > img2.width * img2.height ? img : img2)
                 image_url = maxres.url;
             })
             .catch(
