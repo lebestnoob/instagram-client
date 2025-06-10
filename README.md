@@ -1,6 +1,6 @@
-# Instagram Web Client
+# Instagram Proxy
 
-An Instagram Client
+An Instagram Proxy
 
 ## Features:
 
