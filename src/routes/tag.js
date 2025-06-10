@@ -5,7 +5,6 @@ import headers from "../utils/headers.js";
 
 app.get("/:hashtag", async(c) => {
     let hashtag = c.req.param().hashtag;
-    console.log(hashtag)
     if (hashtag.includes("#")) {
         hashtag = hashtag.replace("#", "");
     }
@@ -78,58 +77,7 @@ app.get("/:hashtag", async(c) => {
                     return (posts = mod);
                 });
         }
-        if (c.req.query("all")) {
-            let after = null,
-                has_next = true;
-            while (has_next) {
-                await fetch(
-                        `https://www.instagram.com/graphql/query/?query_hash=298b92c8d7cad703f7565aa892ede943&variables=` +
-                        encodeURIComponent(
-                            JSON.stringify({
-                                tag_name: hashtag,
-                                first: 20,
-                                after: after,
-                            })
-                        ), {
-                            headers: headers(c),
-                        }
-                    )
-                    .then((res) => res.json())
-                    .then((res) => {
-                        has_next =
-                            res.data.hashtag.edge_hashtag_to_media.page_info.has_next_page;
-                        after = res.data.hashtag.edge_hashtag_to_media.page_info.end_cursor;
-
-                        posts = posts.concat(
-                            res.data.user.edge_owner_to_timeline_media.edges.map(
-                                ({ node }) => {
-                                    return {
-                                        taken_at_timestamp: node.taken_at_timestamp,
-                                        shortcode: node.shortcode,
-                                        is_video: node.is_video,
-                                        type: node.__typename,
-                                        id: node.id,
-                                    };
-                                }
-                            )
-                        );
-                        return (posts = posts.concat(
-                            res.data.hashtag.edge_hashtag_to_top_posts.edges.map(
-                                ({ node }) => {
-                                    return {
-                                        shortcode: node.shortcode,
-                                        taken_at_timestamp: node.taken_at_timestamp,
-                                        is_video: node.is_video,
-                                        type: node.__typename,
-                                        id: node.id,
-                                    };
-                                }
-                            )
-                        ));
-                    });
-            }
-        }
-        if (!c.req.query("end_cursor") && !c.req.query("all")) {
+        if (!c.req.query("end_cursor")) {
             await fetch(
                     `https://www.instagram.com/graphql/query/?query_hash=298b92c8d7cad703f7565aa892ede943&variables=` +
                     encodeURIComponent(
