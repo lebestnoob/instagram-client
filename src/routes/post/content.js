@@ -6,39 +6,13 @@ import { fromShortcode } from "../../utils/postID.js";
 
 app.get("/:id/content", async(c) => {
     let shortcode = c.req.param().id;
-    let post = "";
-    let image_url = "";
+    let post;
+    let image_url;
     let is_video = false;
     let id = 0;
     id = fromShortcode(shortcode);
 
     try {
-        if (Object.keys(c.req.query("id")).length > 0) {
-            await fetch(`https://i.instagram.com/api/v1/media/${id}/info/`, {
-                    headers: headers(c),
-                })
-                .then((res) => res.ok ? res.json() : new Error(res))
-                .then((res) => {
-                    const items = res.items[0];
-                    if ("video_versions" in items.carousel_media[req.query.index]) {
-                        is_video = true;
-                        const video_versions =
-                            items.carousel_media[req.query.index].video_versions;
-                        let maxres = video_versions.reduce((vid, vid2) =>
-                            vid.height * vid.width > vid2.height * vid2.width ? vid : vid2
-                        );
-                        image_url = maxres.url;
-                        return;
-                    }
-                    const image_versions =
-                        items.carousel_media[req.query.index].image_versions2.candidates;
-                    let maxres = image_versions.reduce((img, img2) =>
-                        img.width * img.height > img2.width * img2.height ? img : img2
-                    );
-                    image_url = maxres.url;
-                });
-        }
-
         await fetch(`https://i.instagram.com/api/v1/media/${id}/info/`, {
                 headers: headers(c),
             })
@@ -54,17 +28,47 @@ app.get("/:id/content", async(c) => {
                     image_url = maxres.url;
                     return;
                 }
-                const image_versions = items.image_versions2.candidates;
-                let maxres = image_versions.reduce((img, img2) =>
-                    img.width * img.height > img2.width * img2.height ? img : img2)
-                image_url = maxres.url;
+                if ("image_versions2" in items) {
+                    const image_versions = items.image_versions2.candidates;
+                    let maxres = image_versions.reduce((img, img2) =>
+                        img.width * img.height > img2.width * img2.height ? img : img2)
+                    image_url = maxres.url;
+                }
             })
             .catch(
                 () =>
                 (post = fetch(`https://www.instagram.com/p/${id}/media/?size=l`, {
-                    headers: bypass_headers,
+                    headers: headers(c, {alternative: true}),
                 }).then((res) => res.arrayBuffer()))
             );
+        
+            if (c.req.query("id") > 0) {
+            await fetch(`https://i.instagram.com/api/v1/media/${id}/info/`, {
+                    headers: headers(c),
+                })
+                .then((res) => res.ok ? res.json() : new Error(res))
+                .then((res) => {
+                    const items = res.items[0];
+                    if ("video_versions" in items.carousel_media[c.req.query("id")]) {
+                        is_video = true;
+                        const video_versions =
+                            items.carousel_media[c.req.query("id")].video_versions;
+                        let maxres = video_versions.reduce((vid, vid2) =>
+                            vid.height * vid.width > vid2.height * vid2.width ? vid : vid2
+                        );
+                        image_url = maxres.url;
+                        return;
+                    }
+                    if("image_versions2" in items.carousel_media[c.req.query("id")]) {
+                        const image_versions =
+                            items.carousel_media[c.req.query("id")].image_versions2.candidates;
+                            let maxres = image_versions.reduce((img, img2) =>
+                                img.width * img.height > img2.width * img2.height ? img : img2
+                        );
+                        image_url = maxres.url;
+                    }
+                });
+        }
 
         if (!is_video) {
             post = await fetch(image_url, {
@@ -76,12 +80,11 @@ app.get("/:id/content", async(c) => {
     }
     try {
         if (is_video) {
-            await fetch(image_url, { headers: headers })
-                .then((response) => response.body)
-                .then((response) => {
-                    res.type("mp4");
-                    response.pipe(res);
-                });
+            console.log(is_video)
+            post = await fetch(image_url, { headers: headers(c) })
+                .then((res) => res.arrayBuffer());
+            c.header("Content-Type", "video/mp4");
+            return c.body(Buffer.from(post));
         } else {
             return c.body(Buffer.from(post));
         }
